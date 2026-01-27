@@ -32,4 +32,10 @@ print(
 # State is established connections(the connection is open and data can be sent and received)
 
 
-print(f"System wide socket connections: {socket_connections}")
+for connection in socket_connections:
+    if connection.family in (psutil.AF_INET, psutil.AF_INET6) and connection.type in (
+        psutil.SOCK_STREAM,
+        psutil.SOCK_DGRAM,
+    ) and connection.status == psutil.CONN_ESTABLISHED:
+
+print(f"Socket connections: {socket_connections}")
