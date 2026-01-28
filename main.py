@@ -1,12 +1,12 @@
 # Author: Sekou Traore
 # Network monitoring script
 # Make a minimum working version and incrementally improve
-
+# Filter for specific socket connections based on criteria
 
 # interesting library that provides system and network information
 import psutil
 import time
-
+import socket
 
 # Returns system-wide network I/O statistics as a named tuple(pernic=False lists all interfaces and allows me to
 # access individual interface stats since the returned object remains a named tuple)
@@ -30,12 +30,18 @@ print(
 # Only IPV4(AF_INET) and IPV6(AF_INET6) address family connections
 # Only TCP(SOCK_STREAM) and UDP(SOCK_DGRAM) socket types
 # State is established connections(the connection is open and data can be sent and received)
-
-
+# The socket library is needed to interpret the address family and socket type constants
 for connection in socket_connections:
-    if connection.family in (psutil.AF_INET, psutil.AF_INET6) and connection.type in (
-        psutil.SOCK_STREAM,
-        psutil.SOCK_DGRAM,
-    ) and connection.status == psutil.CONN_ESTABLISHED:
-
-print(f"Socket connections: {socket_connections}")
+    if (
+        connection.family in (socket.AF_INET, socket.AF_INET6)
+        and connection.type
+        in (
+            socket.SOCK_STREAM,
+            socket.SOCK_DGRAM,
+        )
+        and (
+            connection.status == psutil.CONN_ESTABLISHED
+            or connection.status == psutil.CONN_NONE
+        )
+    ):
+        print(f"Socket connections: {socket_connections}")
