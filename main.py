@@ -2,6 +2,7 @@
 # Network monitoring script
 # Make a minimum working version and incrementally improve
 # Filter for specific socket connections based on criteria
+# Make output more user-friendly(change AF_INET to IPv4, etc.)
 
 # interesting library that provides system and network information
 import psutil
@@ -20,7 +21,8 @@ print("Gathering network statistics...")
 time.sleep(3)
 # Display network statistics in easier formatting
 print(
-    f" system wide network stats: bytes sent = {network_stats.bytes_sent}, bytes received = {network_stats.bytes_recv}, pac"
+    f" system wide network stats: bytes sent = {network_stats.bytes_sent}, bytes received = {network_stats.bytes_recv},"
+    f"pac"
     f"kets sent = {network_stats.packets_sent}, packets received = {network_stats.packets_recv}, total receiving errors"
     f" = {network_stats.errin}, total sending errors = {network_stats.errout}, total dropped packets"
     f" = {network_stats.dropin + network_stats.dropout}"
@@ -45,6 +47,19 @@ for connection in socket_connections:
             or connection.status == psutil.CONN_NONE
         )
     ):
+        if connection.family == socket.AF_INET:
+            connection.family = "IPv4"
+    elif connection.family == socket.AF_INET6:
+        connection.family = "IPv6"
+    else:
+        family = str(connection.family)
+        if connection.type == socket.SOCK_STREAM:
+            connection.type = "TCP"
+        elif connection.type == socket.SOCK_DGRAM:
+            connection.type = "UDP"
+        else:
+            connection.type = str(connection.type)
+
         print(
             f"Socket connection: family={connection.family}, type={connection.type},status={connection.status},"
             f" local address={connection.laddr}"
