@@ -47,20 +47,10 @@ for connection in socket_connections:
             or connection.status == psutil.CONN_NONE
         )
     ):
-        if connection.family == socket.AF_INET:
-            connection.family = "IPv4"
-    elif connection.family == socket.AF_INET6:
-        connection.family = "IPv6"
-    else:
-        family = str(connection.family)
-        if connection.type == socket.SOCK_STREAM:
-            connection.type = "TCP"
-        elif connection.type == socket.SOCK_DGRAM:
-            connection.type = "UDP"
-        else:
-            connection.type = str(connection.type)
+        family_name = "IPv4" if connection.family == socket.AF_INET else "IPv6"
+        type_name = "TCP" if connection.type == socket.SOCK_STREAM else "UDP"
 
-        print(
-            f"Socket connection: family={connection.family}, type={connection.type},status={connection.status},"
-            f" local address={connection.laddr}"
-        )
+    print(
+        f"Socket connection: family={connection.family}, type={connection.type},status={connection.status},"
+        f" local address={connection.laddr}"
+    )
