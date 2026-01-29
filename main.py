@@ -49,8 +49,7 @@ for connection in socket_connections:
     ):
         family_name = "IPv4" if connection.family == socket.AF_INET else "IPv6"
         type_name = "TCP" if connection.type == socket.SOCK_STREAM else "UDP"
-
-    print(
-        f"Socket connection: family={connection.family}, type={connection.type},status={connection.status},"
-        f" local address={connection.laddr}"
-    )
+        print(
+            f"Socket connection: family={family_name}, type={type_name},status={connection.status},"
+            f" local address={connection.laddr}"
+        )
