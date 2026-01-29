@@ -9,8 +9,7 @@ import psutil
 import time
 import socket
 
-# Returns system-wide network I/O statistics as a named tuple(pernic=False lists all interfaces and allows me to
-# access individual interface stats since the returned object remains a named tuple)
+# Returns system-wide network I/O statistics as a named tuple(pernic=False condenses stats for all network interfaces)
 network_stats = psutil.net_io_counters(pernic=False, nowrap=True)
 # Get a list of all current socket connections(Only Ipv4 and IPv6 connections)
 socket_connections = psutil.net_connections(kind="inet")
@@ -28,6 +27,8 @@ print(
     f" = {network_stats.dropin + network_stats.dropout}"
 )
 
+print("Gathering socket connection information...")
+time.sleep(3)
 # Display socket connections based on some criteria:
 # Only IPV4(AF_INET) and IPV6(AF_INET6) address family connections
 # Only TCP(SOCK_STREAM) and UDP(SOCK_DGRAM) socket types
