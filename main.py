@@ -61,9 +61,8 @@ for connection in socket_connections:
 print("Gathering network interface information...")
 time.sleep(3)
 for interface_name, interface_info in network_interfaces.items():
-    is_up = "up" if interface_stats.isup else "down"
+    is_up = "up" if interface_info.isup else "down"
     print(
-        f"Interface: {interface_name}, status={is_up}, speed={interface_stats.speed}Mbps, "
-        f"MTU={interface_stats.mtu}, duplex={'full' if interface_stats.duplex == psutil.NIC_DUPLEX_FULL else 'half' if
-        interface_stats.duplex == psutil.NIC_DUPLEX_HALF else 'unknown'}"
+        f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}Mbps, "
+        f"MTU={interface_info.mtu}"
     )
