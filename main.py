@@ -58,11 +58,16 @@ for connection in socket_connections:
         )
 
 # Display network interface information
+# filter out loopback(self) and LANs to show more live information
 print("Gathering network interface information...")
 time.sleep(3)
 for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
+    if interface_name.lower().startswith(
+        "Loopback"
+    ) or interface_name.lower().startswith("local"):
+        continue
     print(
-        f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}Mbps, "
+        f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}MB, "
         f"Maximum transmission Unit={interface_info.mtu} bytes"
     )
