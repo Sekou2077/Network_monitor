@@ -64,5 +64,5 @@ for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
     print(
         f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}Mbps, "
-        f"MTU={interface_info.mtu}"
+        f"Maximum transmission Unit={interface_info.mtu} bytes"
     )
