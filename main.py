@@ -3,11 +3,17 @@
 # Make a minimum working version and incrementally improve
 # Filter for specific socket connections based on criteria
 # Make output more user-friendly(change AF_INET to IPv4, etc.)
+# Start styling the interface with rich
 
-# interesting library that provides system and network information
+# interesting library that provides system and network information(psutil)
 import psutil
 import time
 import socket
+from rich.console import Console
+from rich.progress import track
+
+# Initialize rich console for better output formatting
+console = Console()
 
 # Returns system-wide network I/O statistics as a named tuple(pernic=False condenses stats for all network interfaces)
 network_stats = psutil.net_io_counters(pernic=False, nowrap=True)
@@ -16,10 +22,12 @@ socket_connections = psutil.net_connections(kind="inet")
 # Get network interface card information as a dictionary whose keys are NIC names and values are a named tuple
 network_interfaces = psutil.net_if_stats()
 
-print("Welcome to my network monitoring script")
+console.print("Welcome to my network monitoring script")
 time.sleep(1)
-print("Gathering network statistics...")
-time.sleep(3)
+# Simulate gathering data with a progress bar
+for i in track(range(5), description="Gathering system wide network statistics..."):
+    time.sleep(2)
+
 # Display network statistics in easier formatting
 print(
     f" system wide network stats: bytes sent = {network_stats.bytes_sent}, bytes received = {network_stats.bytes_recv},"
@@ -30,7 +38,8 @@ print(
 )
 
 print("Gathering socket connection information...")
-time.sleep(3)
+for _i in track(range(3), description="Processing socket connections..."):
+    time.sleep(3)
 # Display socket connections based on some criteria:
 # Only IPV4(AF_INET) and IPV6(AF_INET6) address family connections
 # Only TCP(SOCK_STREAM) and UDP(SOCK_DGRAM) socket types
@@ -64,7 +73,7 @@ time.sleep(3)
 for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
     if interface_name.lower().startswith(
-        "Loopback"
+        "loopback"
     ) or interface_name.lower().startswith("local"):
         continue
     print(
