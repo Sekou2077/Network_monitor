@@ -15,7 +15,9 @@ from rich.progress import track
 from rich.theme import Theme
 
 # Custom theming
-custom_theme = Theme({"info": "dim cyan", "warning": "magenta", "danger": "bold red"})
+custom_theme = Theme(
+    {"general": "dim cyan", "warning": "magenta", "danger": "bold red"}
+)
 
 # Initialize rich console for better output formatting
 console = Console(theme=custom_theme)
@@ -27,7 +29,7 @@ socket_connections = psutil.net_connections(kind="inet")
 # Get network interface card information as a dictionary whose keys are NIC names and values are a named tuple
 network_interfaces = psutil.net_if_stats()
 
-console.print("Welcome to my network monitoring script")
+console.print("Welcome to my network monitoring script", style="general")
 time.sleep(1)
 # Simulate gathering data with a progress bar
 for i in track(range(5), description="Gathering system wide network statistics..."):
@@ -43,7 +45,9 @@ print(
 )
 
 # Simulate processing socket connections with a progress bar
-for _i in track(range(3), description="Processing socket connections..."):
+for _i in track(
+    range(3), description="Processing socket connections...", style="general"
+):
     time.sleep(3)
 # Display socket connections based on some criteria:
 # Only IPV4(AF_INET) and IPV6(AF_INET6) address family connections
@@ -74,7 +78,9 @@ for connection in socket_connections:
 
 # Display network interface information
 # filter out loopback(self) and LANs to show more live information
-for _i in track(range(3), description="Processing network interfaces..."):
+for _i in track(
+    range(3), description="Processing network interfaces...", style="general"
+):
     time.sleep(3)
 for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
