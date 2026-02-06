@@ -16,7 +16,13 @@ from rich.theme import Theme
 
 # Custom theming
 custom_theme = Theme(
-    {"general": "dim cyan", "warning": "magenta", "danger": "bold red"}
+    {
+        "general": "dim cyan",
+        "tcp": "magenta",
+        "udp": "deep_pink4",
+        "ipv4": "bold green",
+        "ipv6": "bold blue",
+    }
 )
 
 # Initialize rich console for better output formatting
@@ -32,7 +38,11 @@ network_interfaces = psutil.net_if_stats()
 console.print("Welcome to my network monitoring script", style="general")
 time.sleep(1)
 # Simulate gathering data with a progress bar
-for i in track(range(5), description="Gathering system wide network statistics..."):
+for i in track(
+    range(5),
+    description="Gathering system wide network statistics...",
+    style="green",
+):
     time.sleep(2)
 
 # Display network statistics in easier formatting
@@ -46,7 +56,7 @@ print(
 
 # Simulate processing socket connections with a progress bar
 for _i in track(
-    range(3), description="Processing socket connections...", style="general"
+    range(3), description="Processing socket connections...", style="yellow"
 ):
     time.sleep(3)
 # Display socket connections based on some criteria:
@@ -68,19 +78,27 @@ for connection in socket_connections:
             or connection.status == psutil.CONN_NONE
         )
     ):
-        family_name = "IPv4" if connection.family == socket.AF_INET else "IPv6"
-        type_name = "TCP" if connection.type == socket.SOCK_STREAM else "UDP"
+        # Neat tricks for styling output with markup(rich)
+        family_name = (
+            "[ipv4]IPv4[/ipv4]"
+            if connection.family == socket.AF_INET
+            else "[ipv6]IPv6[/ipv6]"
+        )
+        type_name = (
+            "[tcp]TCP[/tcp]"
+            if connection.type == socket.SOCK_STREAM
+            else "[udp]UDP[/udp]"
+        )
 
         console.print(
-            f"Socket connection: family={family_name}, type={type_name},status={connection.status},"
+            f"Socket connection: family={family_name}, type={type_name}"
+            f",status={connection.status},"
             f" local address={connection.laddr}"
         )
 
 # Display network interface information
 # filter out loopback(self) and LANs to show more live information
-for _i in track(
-    range(3), description="Processing network interfaces...", style="general"
-):
+for _i in track(range(3), description="Processing network interfaces...", style="red"):
     time.sleep(3)
 for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
