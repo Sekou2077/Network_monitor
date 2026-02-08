@@ -6,15 +6,17 @@
 # Start styling the interface with rich
 # Start sniffing packets
 
+import os
 import socket
 import time
-from scapy.all import sniff
 
 # interesting library that provides system and network information(psutil)
 import psutil
+from dotenv import load_dotenv
 from rich.console import Console
 from rich.progress import track
 from rich.theme import Theme
+from scapy.all import sniff
 
 # Custom theming
 custom_theme = Theme(
@@ -29,6 +31,9 @@ custom_theme = Theme(
 
 # Initialize rich console for better output formatting
 console = Console(theme=custom_theme)
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Returns system-wide network I/O statistics as a named tuple(pernic=False condenses stats for all network interfaces)
 network_stats = psutil.net_io_counters(pernic=False, nowrap=True)
@@ -125,3 +130,21 @@ def process_packet(packet):
             f"Packet: [general]Source IP:[/general] {src_ip} ->  [general]Destination IP:[/general] {dst_ip}, "
             f"[general]Protocol:[/general] {protocol}"
         )
+
+
+# Fetch the IP address
+ip_address = os.getenv("IP_ADDRESS")
+print("Capturing traffic involving IP address:", ip_address)
+# Start sniffing packets that involve the specified IP address
+
+# Sniffing packets using processing function and make sure non-promiscuous mode is used to avoid capturing all traffic
+# on the network and only capture traffic relevant to the host
+try:
+    sniff(
+        filter=f"host {ip_address}",
+        prn=process_packet,
+        store=False,
+        promisc=False,
+    )
+except KeyboardInterrupt:
+    console.print("Sniffing session stopped by user.", style="general")
