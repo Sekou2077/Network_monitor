@@ -126,6 +126,11 @@ def process_packet(packet):
         src_ip = ip_layer.src
         dst_ip = ip_layer.dst
         protocol = ip_layer.proto
+        # Map protocol numbers to names for better readability
+        if protocol == 6:
+            protocol = "TCP"
+        elif protocol == 17:
+            protocol = "UDP"
         console.print(
             f"Packet: [general]Source IP:[/general] {src_ip} ->  [general]Destination IP:[/general] {dst_ip}, "
             f"[general]Protocol:[/general] {protocol}"
@@ -146,5 +151,5 @@ try:
         store=False,
         promisc=False,
     )
-except KeyboardInterrupt:
+finally:
     console.print("Sniffing session stopped by user.", style="general")
