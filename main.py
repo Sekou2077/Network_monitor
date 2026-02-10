@@ -37,9 +37,6 @@ socket_connections = psutil.net_connections(kind="inet")
 # Get network interface card information as a dictionary whose keys are NIC names and values are a named tuple
 network_interfaces = psutil.net_if_stats()
 
-console.print("Welcome to Graflow", style="general")
-time.sleep(1)
-
 
 # Display network statistics in easier formatting
 def display_network_stats():
@@ -115,17 +112,16 @@ def display_network_interfaces():
     ):
         time.sleep(2)
 
-
-for interface_name, interface_info in network_interfaces.items():
-    is_up = "up" if interface_info.isup else "down"
-    if interface_name.lower().startswith(
-        "loopback"
-    ) or interface_name.lower().startswith("local"):
-        continue
-    print(
-        f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}MB, "
-        f"Maximum transmission Unit={interface_info.mtu} bytes"
-    )
+    for interface_name, interface_info in network_interfaces.items():
+        is_up = "up" if interface_info.isup else "down"
+        if interface_name.lower().startswith(
+            "loopback"
+        ) or interface_name.lower().startswith("local"):
+            continue
+        print(
+            f"Interface: {interface_name}, status={is_up}, speed={interface_info.speed}MB, "
+            f"Maximum transmission Unit={interface_info.mtu} bytes"
+        )
 
 
 # Function to process sniffed packets and display relevant information(scapy only captures silently)
@@ -197,3 +193,7 @@ def main():
             break
         else:
             console.print("Invalid choice. Please try again.", style="general")
+
+
+if __name__ == "__main__":
+    main()
