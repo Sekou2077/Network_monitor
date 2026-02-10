@@ -109,8 +109,13 @@ def show_socket_connections():
 
 # Display network interface information
 # filter out loopback(self) and LANs to show more live information
-for _i in track(range(3), description="Processing network interfaces...", style="red"):
-    time.sleep(3)
+def display_network_interfaces():
+    for _ in track(
+        range(3), description="Processing network interfaces...", style="red"
+    ):
+        time.sleep(2)
+
+
 for interface_name, interface_info in network_interfaces.items():
     is_up = "up" if interface_info.isup else "down"
     if interface_name.lower().startswith(
@@ -145,24 +150,26 @@ def process_packet(packet):
         )
 
 
-# Fetch the IP address from the environment variable
-ip_address = os.getenv("IP_ADDRESS")
-# provide a user-inputted alternative if the environment variable is not set
-if not ip_address:
-    ip_address = console.input(
-        "Environment variable not found, enter the IP address to monitor: "
-    ).strip()
+def sniff_traffic():
+    # Fetch the IP address from the environment variable
+    ip_address = os.getenv("IP_ADDRESS")
+    # provide a user-inputted alternative if the environment variable is not set
+    if not ip_address:
+        ip_address = console.input(
+            "Environment variable not found, enter the IP address to monitor: "
+        ).strip()
 
-print("Capturing traffic involving IP address(Ctrl+C to stop):", ip_address)
-# Start sniffing packets that involve the specified IP address
-# Sniffing packets using processing function and make sure non-promiscuous mode is used to avoid capturing all traffic
-# on the network and only capture traffic relevant to the host
-try:
-    sniff(
-        filter=f"host {ip_address}",
-        prn=process_packet,
-        store=False,
-        promisc=False,
-    )
-finally:
-    console.print("Sniffing session stopped by user.", style="general")
+    print("Capturing traffic involving IP address(Ctrl+C to stop):", ip_address)
+    # Start sniffing packets that involve the specified IP address
+    # Sniffing packets using processing function and make sure non-promiscuous mode is used to avoid
+    # capturing all traffic
+    # on the network and only capture traffic relevant to the host
+    try:
+        sniff(
+            filter=f"host {ip_address}",
+            prn=process_packet,
+            store=False,
+            promisc=False,
+        )
+    finally:
+        console.print("Sniffing session stopped by user.", style="general")
