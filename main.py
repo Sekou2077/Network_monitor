@@ -37,66 +37,75 @@ socket_connections = psutil.net_connections(kind="inet")
 # Get network interface card information as a dictionary whose keys are NIC names and values are a named tuple
 network_interfaces = psutil.net_if_stats()
 
-console.print("Welcome to my network monitoring script", style="general")
+console.print("Welcome to Graflow", style="general")
 time.sleep(1)
-# Simulate gathering data with a progress bar
-for i in track(
-    range(5),
-    description="Gathering system wide network statistics...",
-    style="green",
-):
-    time.sleep(2)
+
 
 # Display network statistics in easier formatting
-print(
-    f" System wide network stats: bytes sent = {network_stats.bytes_sent}, bytes received = {network_stats.bytes_recv},"
-    f"pac"
-    f"kets sent = {network_stats.packets_sent}, packets received = {network_stats.packets_recv}, total receiving errors"
-    f" = {network_stats.errin}, total sending errors = {network_stats.errout}, total dropped packets"
-    f" = {network_stats.dropin + network_stats.dropout}"
-)
+def display_network_stats():
+    # Simulate gathering data with a progress bar
+    for _ in track(
+        range(5),
+        description="Gathering system wide network statistics...",
+        style="green",
+    ):
+        time.sleep(2)
+    print(
+        f" System wide network stats: bytes sent = {network_stats.bytes_sent}, bytes received ="
+        f" {network_stats.bytes_recv},"
+        f"pac"
+        f"kets sent = {network_stats.packets_sent}, packets received = {network_stats.packets_recv}, "
+        f"total receiving errors"
+        f" = {network_stats.errin}, total sending errors = {network_stats.errout}, total dropped packets"
+        f" = {network_stats.dropin + network_stats.dropout}"
+    )
 
-# Simulate processing socket connections with a progress bar
-for _i in track(
-    range(3), description="Processing socket connections...", style="yellow"
-):
-    time.sleep(3)
+
 # Display socket connections based on some criteria:
 # Only IPV4(AF_INET) and IPV6(AF_INET6) address family connections
 # Only TCP(SOCK_STREAM) and UDP(SOCK_DGRAM) socket types
 # State is established connections(the connection is open and data can be sent and received)
 # The socket library is needed to interpret the address family and socket type constants
 # UDP connections have a status of NONE since it is connectionless
-for connection in socket_connections:
-    if (
-        connection.family in (socket.AF_INET, socket.AF_INET6)
-        and connection.type
-        in (
-            socket.SOCK_STREAM,
-            socket.SOCK_DGRAM,
-        )
-        and (
-            connection.status == psutil.CONN_ESTABLISHED
-            or connection.status == psutil.CONN_NONE
-        )
+def show_socket_connections():
+    # Simulate processing socket connections with a progress bar
+    for _ in track(
+        range(3), description="Processing socket connections...", style="yellow"
     ):
-        # Neat tricks for styling output with markup(rich)
-        family_name = (
-            "[ipv4]IPv4[/ipv4]"
-            if connection.family == socket.AF_INET
-            else "[ipv6]IPv6[/ipv6]"
-        )
-        type_name = (
-            "[tcp]TCP[/tcp]"
-            if connection.type == socket.SOCK_STREAM
-            else "[udp]UDP[/udp]"
-        )
+        time.sleep(2)
 
-        console.print(
-            f"Socket connection: family={family_name}, type={type_name}"
-            f",status={connection.status},"
-            f" local address={connection.laddr}"
-        )
+    for connection in socket_connections:
+        if (
+            connection.family in (socket.AF_INET, socket.AF_INET6)
+            and connection.type
+            in (
+                socket.SOCK_STREAM,
+                socket.SOCK_DGRAM,
+            )
+            and (
+                connection.status == psutil.CONN_ESTABLISHED
+                or connection.status == psutil.CONN_NONE
+            )
+        ):
+
+            # Neat tricks for styling output with markup (rich)
+            family_name = (
+                "[ipv4]IPv4[/ipv4]"
+                if connection.family == socket.AF_INET
+                else "[ipv6]IPv6[/ipv6]"
+            )
+            type_name = (
+                "[tcp]TCP[/tcp]"
+                if connection.type == socket.SOCK_STREAM
+                else "[udp]UDP[/udp]"
+            )
+
+            console.print(
+                f"Socket connection: family={family_name}, type={type_name}"
+                f", status={connection.status},"
+                f" local address={connection.laddr}"
+            )
+
 
 # Display network interface information
 # filter out loopback(self) and LANs to show more live information
@@ -143,7 +152,6 @@ if not ip_address:
     ip_address = console.input(
         "Environment variable not found, enter the IP address to monitor: "
     ).strip()
-
 
 print("Capturing traffic involving IP address(Ctrl+C to stop):", ip_address)
 # Start sniffing packets that involve the specified IP address
